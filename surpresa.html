@@ -1,114 +1,137 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Uma surpresa pra você</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Desconto Profissional</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+        }
 
-    body {
-      height: 100vh;
-      background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
 
-    .card {
-      background: white;
-      padding: 30px 25px;
-      width: 320px;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      text-align: center;
-      animation: fadeIn 2s ease;
-    }
+        .container {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
 
-    h1 {
-      font-size: 1.6rem;
-      margin-bottom: 15px;
-      color: #444;
-    }
+        h2 { margin-top: 0; color: var(--primary); text-align: center; }
 
-    p {
-      font-size: 1rem;
-      color: #555;
-      line-height: 1.5;
-      margin-bottom: 20px;
-    }
+        .input-group { margin-bottom: 1.5rem; }
 
-    .flower {
-      font-size: 4rem;
-      animation: pulse 2s infinite;
-      margin-bottom: 20px;
-    }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
 
-    button {
-      background: #ff6f91;
-      border: none;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 30px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
 
-    button:hover {
-      transform: scale(1.05);
-      background: #ff4f79;
-    }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
 
-    .hidden {
-      display: none;
-      margin-top: 20px;
-      color: #333;
-      font-size: 1.05rem;
-    }
+        button:hover { background-color: #4338ca; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        .result {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: none; /* Escondido até calcular */
+        }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
-    }
-  </style>
+        .result p { margin: 5px 0; font-size: 0.95rem; }
+        .highlight { font-weight: bold; color: var(--primary); }
+    </style>
 </head>
 <body>
-  <div class="card">
-    <div class="flower">🌸</div>
-    <h1>Oi, Kamilly</h1>
-    <p>
-      Fiz isso aqui de um jeito diferente,<br>
-      porque algumas pessoas merecem mais<br>
-      do que palavras comuns.
-    </p>
 
-    <button onclick="mostrarMensagem()">Clique aqui</button>
-
-    <div id="mensagem" class="hidden">
-      🌷<br><br>
-      Assim como essa flor,<br>
-      você deixa tudo mais leve,<br>
-      mais bonito e mais calmo.<br><br>
-      — Feito com carinho 💙
+<div class="container">
+    <h2>Calculadora de Compra</h2>
+    
+    <div class="input-group">
+        <label>Valor Unitário Original (R$)</label>
+        <input type="number" id="v_orig" placeholder="Ex: 100.00" step="0.01">
     </div>
-  </div>
 
-  <script>
-    function mostrarMensagem() {
-      document.getElementById('mensagem').classList.remove('hidden');
+    <div class="input-group">
+        <label>Quantidade de Unidades</label>
+        <input type="number" id="qtd" placeholder="Ex: 2">
+    </div>
+
+    <div class="input-group">
+        <label>Valor Unitário com Desconto (R$)</label>
+        <input type="number" id="v_desc" placeholder="Ex: 85.00" step="0.01">
+    </div>
+
+    <button onclick="calcular()">Calcular Resumo</button>
+
+    <div id="resultado" class="result">
+        <p>Total sem desconto: <span id="res_bruto" class="highlight"></span></p>
+        <p>Total com desconto: <span id="res_liquido" class="highlight"></span></p>
+        <hr>
+        <p>Economia total: <span id="res_economia" class="highlight"></span></p>
+        <p>Desconto aplicado: <span id="res_pct" class="highlight"></span></p>
+    </div>
+</div>
+
+<script>
+    function calcular() {
+        // Captura os valores dos inputs (o equivalente ao scanf do C)
+        const v_orig = parseFloat(document.getElementById('v_orig').value);
+        const qtd = parseInt(document.getElementById('qtd').value);
+        const v_desc = parseFloat(document.getElementById('v_desc').value);
+
+        if (isNaN(v_orig) || isNaN(qtd) || isNaN(v_desc)) {
+            alert("Por favor, preencha todos os campos corretamente.");
+            return;
+        }
+
+        // Lógica de cálculo (exatamente como no seu código C)
+        const total_original = v_orig * qtd;
+        const total_com_desconto = v_desc * qtd;
+        const desconto_dinheiro = total_original - total_com_desconto;
+        const porcentagem = (desconto_dinheiro / total_original) * 100;
+
+        // Exibição dos resultados (o equivalente ao printf do C)
+        document.getElementById('res_bruto').innerText = `R$ ${total_original.toFixed(2)}`;
+        document.getElementById('res_liquido').innerText = `R$ ${total_com_desconto.toFixed(2)}`;
+        document.getElementById('res_economia').innerText = `R$ ${desconto_dinheiro.toFixed(2)}`;
+        document.getElementById('res_pct').innerText = `${porcentagem.toFixed(2)}%`;
+
+        document.getElementById('resultado').style.display = 'block';
     }
-  </script>
+</script>
+
 </body>
 </html>

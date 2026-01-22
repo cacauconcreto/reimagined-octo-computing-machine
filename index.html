@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Desconto Profissional</title>
+    <title>Calculadora de Compra Universal</title>
     <style>
         :root {
             --primary: #4f46e5;
@@ -34,17 +34,18 @@
 
         h2 { margin-top: 0; color: var(--primary); text-align: center; }
 
-        .input-group { margin-bottom: 1.5rem; }
+        .input-group { margin-bottom: 1.2rem; }
 
         label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
 
-        input {
+        select, input {
             width: 100%;
             padding: 10px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 1rem;
+            background-color: white;
         }
 
         button {
@@ -58,20 +59,22 @@
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
+            margin-top: 10px;
         }
 
         button:hover { background-color: #4338ca; }
 
         .result {
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             padding: 1rem;
             background: #f1f5f9;
             border-radius: 8px;
-            display: none; /* Escondido até calcular */
+            display: none;
         }
 
-        .result p { margin: 5px 0; font-size: 0.95rem; }
+        .result p { margin: 8px 0; font-size: 0.95rem; }
         .highlight { font-weight: bold; color: var(--primary); }
+        hr { border: 0; border-top: 1px solid #cbd5e1; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -80,18 +83,26 @@
     <h2>Calculadora de Compra</h2>
     
     <div class="input-group">
-        <label>Valor Unitário Original (R$)</label>
-        <input type="number" id="v_orig" placeholder="Ex: 100.00" step="0.01">
+        <label>Tipo de Medida</label>
+        <select id="tipo_medida" onchange="atualizarLabels()">
+            <option value="un">Quantidade (Unidades)</option>
+            <option value="kg">Peso (Quilos/Kg)</option>
+        </select>
     </div>
 
     <div class="input-group">
-        <label>Quantidade de Unidades</label>
-        <input type="number" id="qtd" placeholder="Ex: 2">
+        <label id="label_v_orig">Valor Unitário Original (R$)</label>
+        <input type="number" id="v_orig" placeholder="0.00" step="0.01">
     </div>
 
     <div class="input-group">
-        <label>Valor Unitário com Desconto (R$)</label>
-        <input type="number" id="v_desc" placeholder="Ex: 85.00" step="0.01">
+        <label id="label_qtd">Quantidade de Unidades</label>
+        <input type="number" id="qtd" placeholder="Ex: 2 ou 0.500" step="0.001">
+    </div>
+
+    <div class="input-group">
+        <label id="label_v_desc">Valor Unitário com Desconto (R$)</label>
+        <input type="number" id="v_desc" placeholder="0.00" step="0.01">
     </div>
 
     <button onclick="calcular()">Calcular Resumo</button>
@@ -106,10 +117,28 @@
 </div>
 
 <script>
+    function atualizarLabels() {
+        const tipo = document.getElementById('tipo_medida').value;
+        const labelVOrig = document.getElementById('label_v_orig');
+        const labelQtd = document.getElementById('label_qtd');
+        const labelVDesc = document.getElementById('label_v_desc');
+
+        if (tipo === 'kg') {
+            labelVOrig.innerText = "Preço por Kg Original (R$)";
+            labelQtd.innerText = "Peso Total (Kg)";
+            labelVDesc.innerText = "Preço por Kg com Desconto (R$)";
+        } else {
+            labelVOrig.innerText = "Valor Unitário Original (R$)";
+            labelQtd.innerText = "Quantidade de Unidades";
+            labelVDesc.innerText = "Valor Unitário com Desconto (R$)";
+        }
+        // Limpa o resultado ao trocar o tipo para evitar confusão
+        document.getElementById('resultado').style.display = 'none';
+    }
+
     function calcular() {
-        // Captura os valores dos inputs (o equivalente ao scanf do C)
         const v_orig = parseFloat(document.getElementById('v_orig').value);
-        const qtd = parseInt(document.getElementById('qtd').value);
+        const qtd = parseFloat(document.getElementById('qtd').value);
         const v_desc = parseFloat(document.getElementById('v_desc').value);
 
         if (isNaN(v_orig) || isNaN(qtd) || isNaN(v_desc)) {
@@ -117,13 +146,11 @@
             return;
         }
 
-        // Lógica de cálculo (exatamente como no seu código C)
         const total_original = v_orig * qtd;
         const total_com_desconto = v_desc * qtd;
         const desconto_dinheiro = total_original - total_com_desconto;
         const porcentagem = (desconto_dinheiro / total_original) * 100;
 
-        // Exibição dos resultados (o equivalente ao printf do C)
         document.getElementById('res_bruto').innerText = `R$ ${total_original.toFixed(2)}`;
         document.getElementById('res_liquido').innerText = `R$ ${total_com_desconto.toFixed(2)}`;
         document.getElementById('res_economia').innerText = `R$ ${desconto_dinheiro.toFixed(2)}`;
